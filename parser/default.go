@@ -16,7 +16,7 @@ func DefaultRug() RugFile {
 }
 
 func WriteDefault(path string) error {
-	def, err := json.Marshal(DefaultRug())
+	def, err := json.MarshalIndent(DefaultRug(), "", "    ")
 	if err != nil {
 		return err
 	}
