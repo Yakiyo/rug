@@ -67,7 +67,7 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		exitCode, err := Run(rug, script, passThrough)
+		exitCode, err := Run(&rug, script, passThrough)
 
 		if exitCode != 0 || err != nil {
 			fmt.Fprintf(os.Stderr, "%v Process exited with status code %v. (%v)\n", errTag, exitCode, err)
