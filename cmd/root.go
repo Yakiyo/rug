@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/Yakiyo/rug/parser"
@@ -12,7 +11,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "rug",
+	Use:   "rug [args]",
 	Short: shortDesc,
 	Long:  longDesc,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -40,7 +39,8 @@ var rootCmd = &cobra.Command{
 				os.Exit(1)
 			}
 			if err := parser.WriteDefault(file); err != nil {
-				log.Fatalf("%v %v\n", errTag, err)
+				fmt.Fprintf(os.Stderr, "%v %v\n", errTag, err)
+				os.Exit(1)
 			}
 			fmt.Println("Initialized rug file in", file)
 			return
@@ -53,8 +53,26 @@ var rootCmd = &cobra.Command{
 			cmd.Help()
 			os.Exit(1)
 		}
+		rugPath, _ := cmd.Flags().GetString("config")
+		rug, err := parser.ReadRugFile(rugPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v %v\n", errTag, err)
+			os.Exit(1)
+		}
+		script := args[0]
+		passThrough := args[1:]
 
-		// TODO
+		if !rug.HasScript(script) {
+			fmt.Fprintf(os.Stderr, "%v Missing script by the name `%v`.\nRun `rug --list` to see a list of all commands\n", errTag, script)
+			os.Exit(1)
+		}
+
+		exitCode, err := Run(rug, script, passThrough)
+
+		if exitCode != 0 || err != nil {
+			fmt.Fprintf(os.Stderr, "%v Process exited with status code %v. (%v)\n", errTag, exitCode, err)
+			os.Exit(1)
+		}
 	},
 }
 
