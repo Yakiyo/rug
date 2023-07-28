@@ -11,3 +11,16 @@ type RugFile struct {
 	// List of scripts
 	Scripts map[string]string `json:"scripts"`
 }
+
+func (r *RugFile) HasScript(name string) bool {
+	_, ok := r.Scripts[name]
+	return ok
+}
+
+func (r *RugFile) GetScript(name string) string {
+	script, ok := r.Scripts[name]
+	if !ok {
+		return ""
+	}
+	return script
+}
