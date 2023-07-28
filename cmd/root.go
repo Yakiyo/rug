@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/Yakiyo/rug/parser"
 	cc "github.com/ivanpirog/coloredcobra"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -27,7 +29,20 @@ var rootCmd = &cobra.Command{
 		}
 
 		if lo.Must(cmd.Flags().GetBool("init")) {
-			// TODO
+			file, err := cmd.Flags().GetString("config")
+			// this should usually never happen
+			if err != nil {
+				// panic in the off-case it does
+				panic(err)
+			}
+			if fileExists(file) {
+				fmt.Fprintf(os.Stderr, "%v %v\n", errTag, "Rug File already exists")
+				os.Exit(1)
+			}
+			if err := parser.WriteDefault(file); err != nil {
+				log.Fatalf("%v %v\n", errTag, err)
+			}
+			fmt.Println("Initialized rug file in", file)
 			return
 		}
 
