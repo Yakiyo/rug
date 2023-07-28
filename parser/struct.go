@@ -3,11 +3,11 @@ package parser
 // Struct representing a rug file (rug.json)
 type RugFile struct {
 	// Run pre/post hooks
-	Hooks bool
+	Hooks bool `json:"hooks"`
 	// A map of environment variables
-	Env map[string]string
+	Env map[string]string `json:"env"`
 	// paths to add to $PATH before running
-	Path []string
+	Path []string `json:"path"`
 	// List of scripts
-	Scripts map[string]string
+	Scripts map[string]string `json:"scripts"`
 }
