@@ -6,7 +6,6 @@ import (
 
 	"github.com/Yakiyo/rug/parser"
 	cc "github.com/ivanpirog/coloredcobra"
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
 
@@ -17,17 +16,30 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check for flags first
 
-		if lo.Must(cmd.Flags().GetBool("version")) {
+		if ok, _ := cmd.Flags().GetBool("version"); ok {
 			fmt.Printf("Rug v%v\n", Version)
 			return
 		}
 
-		if lo.Must(cmd.Flags().GetBool("list")) {
-			// TODO
+		if ok, _ := cmd.Flags().GetBool("list"); ok {
+			rugPath, _ := cmd.Flags().GetString("config")
+			if !fileExists(rugPath) {
+				fmt.Fprintf(os.Stderr, "%v %v\n", errTag, "Missing rug file. Use `rug --init` to create one.")
+				os.Exit(1)
+			}
+			rug, err := parser.ReadRugFile(rugPath)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v %v\n", errTag, err)
+				os.Exit(1)
+			}
+
+			for k := range rug.Scripts {
+				fmt.Println("•", k)
+			}
 			return
 		}
 
-		if lo.Must(cmd.Flags().GetBool("init")) {
+		if ok, _ := cmd.Flags().GetBool("init"); ok {
 			file, err := cmd.Flags().GetString("config")
 			// this should usually never happen
 			if err != nil {
