@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 // Struct representing a rug file (rug.json)
 type RugFile struct {
 	// Run pre/post hooks
@@ -23,4 +25,12 @@ func (r *RugFile) GetScript(name string) string {
 		return ""
 	}
 	return script
+}
+
+func (r *RugFile) GetEnv() []string {
+	envs := []string{}
+	for k, v := range r.Env {
+		envs = append(envs, fmt.Sprintf("%v=%v", k, v))
+	}
+	return envs
 }
